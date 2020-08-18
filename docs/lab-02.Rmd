@@ -165,9 +165,8 @@ coviddatastate %>%
   ggplot(aes(x = date, y = newcasepercap)) +
   geom_col(aes(y = newcasepercap, col = state))+
   geom_line(aes(col = state)) + geom_line(aes(y = roll7), size = 1)+
-  facet_grid(~state) + ggthemes::theme_solarized_2() +
-  theme(legend.position = "bottom") +
-  theme(legend.position = "NA") +
+  facet_grid(~state) + ggthemes::theme_solarized() + ggthemes::scale_color_gdocs() +
+  theme(legend.position = "none") +
   labs(title = "Daily new cases Per Capita by State", y = "Daily New Count Per Capita", x = "Date",
        caption = "Lab 02")
 
