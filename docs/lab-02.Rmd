@@ -29,13 +29,15 @@ stateofinterest <- 'California'
 ```
 
 ```{r q1 cont, warning=FALSE, message=FALSE}
+
+
 # Question 1
 
 addednewcases <- coviddata %>% # filter data by state of interest
   filter(state == stateofinterest) %>%
   group_by(county, date) %>%
   summarise(cases = sum(cases), fips) %>%
-  mutate(newCases = cases - lag(cases)) %>% # creates new column withe daily new cases
+  mutate(newCases = cases - lag(cases)) %>% # creates new column with daily new cases
   ungroup()
 
 mostnewcases <- addednewcases %>% # finds top 5 counties with most new cases per day
@@ -50,19 +52,27 @@ mostcumulativecases <- addednewcases %>% # finds top 5 counties with most cumula
 
 knitr::kable(mostnewcases, caption = "Most New Cases California Counties", col.names = c("County", "New Cases"),
              format.args = list(big.mark = ","))
+
+
 ```
 
-Los Angeles, San Bernardino, Riverside, Fresno and Orange County are the counties with the most new cases reported daily. Both Los Angeles and San Bernado reported over a thousand.
+**Los Angeles, San Bernardino, Riverside, Fresno and Orange County** are the counties with the most new cases reported daily. Both Los Angeles and San Bernado reported over a thousand.
 
 ```{r table2}
+
+
 knitr::kable(mostcumulativecases, caption = "Most Cumulative Cases California Counties",
              col.names = c("County", "Total Cases"), format.args = list(big.mark = ","))
+
+
 ```
 
-Los Angeles, Riverside, Orange, San Bernardino, and San Diego are the counties with the most total reported cases, this could be due to be being the largest 5 counties in California. Los Angeles is the only reporting more than 50,000 cases currently. 
+**Los Angeles, Riverside, Orange, San Bernardino, and San Diego** are the counties with the most total reported cases, this could be due to be being the largest 5 counties in California. Los Angeles is the only reporting more than 50,000 cases currently. 
 
 
 ```{r Q1 part2, warning=FALSE, message=FALSE}
+
+
 PopulationEstimates <- read_excel("~/github/geog-176A-labs/data/PopulationEstimates.xls", skip = 2)
 # dim(PopulationEstimates) # examine dimensions of excel file
 # head(PopulationEstimates,5)
@@ -94,11 +104,13 @@ mostcumulativecasespc <-CovidandPopulation %>% # finds top 5 counties with cumul
 
 knitr::kable(mostnewcasespc, caption = "Most New Cases California Counties Per Capita", col.names = c("County", "New Cases Per Capita"))
 
+
 ```
 
-Examining the same data with respect to population size, it can be seen that the 5 highest counties of new daily cases per capita are Imperial, Kings, Kern, Tulare and Merced County. While most total cases per capita are Inyo, Stanislaus, Fresno, Kings, and San Bernardino County.
+Examining the same data with respect to population size, it can be seen that the 5 highest counties of new daily cases per capita are **Imperial, Kings, Kern, Tulare and Merced County.** While most total cases per capita are **Inyo, Stanislaus, Fresno, Kings, and San Bernardino County.**
 
 ```{r Q1 part4, warning=FALSE, message=FALSE}
+
 
 knitr::kable(mostcumulativecasespc, caption = "Most Cumulative Cases California Counties Per Capita",
              col.names = c("County", "Total Cases Per Capita"))
@@ -113,11 +125,14 @@ greaterthan100 <- CovidandPopulation %>%
 
 knitr::kable(greaterthan100, caption = "California Counties with > 100 cases within 2 weeks ", col.names = c("County", "Date", "Cases Per 100,000 Residents"))
 
+
 ```
 
-15 counties have more than 100 cases per 100,000 residents in the past 14 days, that leaves 43 counties deemed as safe.
+##### 15 counties have more than 100 cases per 100,000 residents in the past 14 days, that leaves **43** counties deemed as safe.
 
 ```{r Q2, warning=FALSE, message=FALSE}
+
+
 ## Question 2
 
 statesofinterest <- c("New York", "California", "Louisiana","Florida")
@@ -137,6 +152,7 @@ coviddatastate <- coviddata %>%
   theme(legend.position = "NA") +
   labs(title = "Daily new cases by State", y = "Daily New Count", x = "Date",
        caption = "Lab 02")
+  
 ```
 
 ```{r Q2 part 2,warning=FALSE, message=FALSE}
@@ -155,8 +171,14 @@ coviddatastate %>%
   labs(title = "Daily new cases Per Capita by State", y = "Daily New Count Per Capita", x = "Date",
        caption = "Lab 02")
 
+
 ```
 
 
-This graph was scaled by population, and it can be seen that Louisiana's situation is more dire while California's appear better. California has the largest population among these states and after scaling, it can be seen that they have had the smallest reported spike in daily cases. New York and Florida are close together in population and appear to have a similar sized spike in daily cases. Whereas before the scaling it appeared Florida had the largest spike, and California and New York's was similar. Although New York's was in April while Florida's happened in July. Louisiana has the smallest population by far with roughly 4.6 million (New York, California and Florida have a population greater than 19 million) but, after scaling, has the largest spike in daily new cases per capita.
+##### This graph was scaled by population, and it can be seen that Louisiana's situation is more dire while California's appear better. 
+##### California has the largest population among these states and after scaling, it can be seen that they have had the smallest reported spike in daily cases. 
+##### New York and Florida are close together in population and appear to have a similar sized spike in daily cases. 
+##### Whereas before the scaling it appeared Florida had the largest spike, and California and New York's was similar.
+##### Although New York's was in April while Florida's happened in July.
+##### Louisiana has the smallest population by far with roughly 4.6 million (New York, California and Florida have a population greater than 19 million) but, after scaling, has the largest spike in daily new cases per capita.
 
