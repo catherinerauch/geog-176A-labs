@@ -1,7 +1,7 @@
 ---
 title: "Geography 176A"
 author: "[Catherine Rauch](https://catherinerauch.github.io)"
-subtitle: 'Lab 03: Distances and the Border Zone'
+subtitle: 'Lab 03: Distances,Projections and the Danger Zone'
 output:
   html_document:
     theme: spacelab
@@ -42,8 +42,6 @@ citydata <- read_csv("~/github/geog-176A-labs/data/uscities.csv") %>%
   st_as_sf(coords = c("lng", "lat"), crs = 4326) %>% 
   st_transform(eqdc) %>% 
   filter(!state_name %in% c( "Puerto Rico", "Alaska","Hawaii"))
-  
-
 
 ```
 
@@ -86,7 +84,7 @@ farcities = citydata %>%
 
 knitr::kable(farcities, caption = "Five US Cities Farthest from a State Border", col.names = c("City", "State", "Distance from State Border (km)"))
 
-#######################################################
+########################################################
 
 # keep Mexico boundaries
 stMexico <- countryboundaries %>% 
@@ -106,7 +104,7 @@ farMexicocities = citydata %>%
 
 knitr::kable(farMexicocities, caption = "Five US Cities Farthest from Mexican Border", col.names = c("City", "State", "Distance from Border (km)"))
 
-######################################################
+########################################################
 
 # keep Canada boundaries 
 stCanada <- countryboundaries %>% 
@@ -117,7 +115,6 @@ citydata = citydata %>%
   mutate(dist_to_canada = st_distance(citydata, stCanada),
          dist_to_canada = units::set_units(dist_to_canada,"km"),
          dist_to_canada = units::drop_units(dist_to_canada))
-
 
 farCanadacities = citydata %>%
   slice_max(dist_to_canada, n = 5) %>% 
@@ -229,43 +226,32 @@ ggplot() +
 ```{r Q4, warning=FALSE, message=FALSE}
   
 # how many cities are in this 100 mile zone? (100 miles ~ 160 kilometers)
-
 numcities <- citydata %>% 
   filter(dist_to_border < 160) %>% 
   nrow()
 
-
 # how many people live in a city within 100 miles of the border?
-
 numpeople <- citydata %>% 
   filter(dist_to_border < 160) %>% 
   summarise(sum(population))
 
-
 # what percentage of the total population is in this zone?
-
 percentpeople <- numpeople / citydata %>% 
   summarise(sum(population))
-
 
 # does it match the ACLU estimate in the link above?
 string <- "The ACLU estimates 2 in 3 people (roughly 66.7%) live within the 100 mile border zone, while my estimate was 65.4% roughly a percentage point lower."
 
-
+########################################################
 
 df <- data.frame(numcities, numpeople$`sum(population)`, 100 * percentpeople$`sum(population)`, string)
 
 kableExtra::kable_styling(knitr::kable(df, col.names = c("Total number of cities within 100 mile zone", "Total number of people living within 100 mile zone", "Percent of Population living within 100 mile zone", "" ),format.args = list(big.mark = ","),  align = "l"))
 ```
 
-
 <br>
 
 ```{r q4 part 2, warning=FALSE, message=FALSE}
-
-
-############################################################
-
 # map highlighting cites within the 100 mile zone of border
 # label the 10 most populous cities in the Danger Zone
 
@@ -294,16 +280,13 @@ ggplot() +
 
 
 ```{r extra credit, warning=FALSE, message=FALSE}
-##################################################### EXTRA CREDIT
-
+###################################### EXTRA CREDIT
 
 # label the most populous city in each state within the Danger Zone
-
 mostpopdangerbystate <- citydata %>% 
   filter(dist_to_border < 160) %>% 
     group_by(state_name) %>% 
   slice_max(population)
-
 
 ggplot() +
   geom_sf(data = stCONUSsb, size = .5) +
@@ -320,6 +303,4 @@ ggplot() +
   )  +
   labs(title = "US Cities within 100 miles from National Border",
        col = "Distance (km)")
-
-
 ```
