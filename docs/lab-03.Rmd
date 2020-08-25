@@ -1,7 +1,7 @@
 ---
 title: "Geography 176A"
 author: "[Catherine Rauch](https://catherinerauch.github.io)"
-subtitle: 'Lab 03: Distances,Projections and the Danger Zone'
+subtitle: 'Lab 03: Distances, Projections and the Danger Zone'
 output:
   html_document:
     theme: spacelab
@@ -61,12 +61,13 @@ citydata = citydata %>%
          dist_to_border = units::drop_units(dist_to_border))
 
 far_cities = citydata %>%
-   slice_max(dist_to_border, n = 5) %>% 
+  slice_max(dist_to_border, n = 5) %>% 
   data.frame() %>% 
   select(city, state_name, dist_to_border)
 
 
-knitr::kable(far_cities, caption = "Five US Cities Farthest from a National Border", col.names = c("City", "State", "Distance from Border (km)"))
+knitr::kable(far_cities, caption = "Five US Cities Farthest from a National Border", 
+             col.names = c("City", "State", "Distance from Border (km)"))
 
 ########################################################
 
@@ -85,7 +86,8 @@ farcities = citydata %>%
   data.frame() %>% 
   select(city, state_name, dist_to_state)
 
-knitr::kable(farcities, caption = "Five US Cities Farthest from a State Border", col.names = c("City", "State", "Distance from State Border (km)"))
+knitr::kable(farcities, caption = "Five US Cities Farthest from a State Border", 
+             col.names = c("City", "State", "Distance from State Border (km)"))
 
 ########################################################
 
@@ -105,7 +107,8 @@ farMexicocities = citydata %>%
   data.frame() %>% 
   select(city, state_name, dist_to_mexico)
 
-knitr::kable(farMexicocities, caption = "Five US Cities Farthest from Mexican Border", col.names = c("City", "State", "Distance from Border (km)"))
+knitr::kable(farMexicocities, caption = "Five US Cities Farthest from Mexican Border", 
+             col.names = c("City", "State", "Distance from Border (km)"))
 
 ########################################################
 
@@ -124,7 +127,8 @@ farCanadacities = citydata %>%
   data.frame() %>% 
   select(city, state_name, dist_to_canada)
 
-knitr::kable(farCanadacities, caption = "Five US Cities Farthest from Canadian Border", col.names = c("City", "State", "Distance from Border (km)"))
+knitr::kable(farCanadacities, caption = "Five US Cities Farthest from Canadian Border", 
+             col.names = c("City", "State",  "Distance from Border (km)"))
 
 ```
 <br>
@@ -145,8 +149,7 @@ ggplot() +
     data = largestpop,
     aes(label = city, geometry = geometry),
     stat = "sf_coordinates",
-    size = 3.2
-  ) +
+    size = 3.2) +
   labs(title = "10 Largest Cities (by population) in the US", x = "", y = "")
 
 ```
@@ -169,8 +172,7 @@ ggplot() +
     data = far_cities2,
     aes(label = city, geometry = geometry),
     stat = "sf_coordinates",
-    size = 4
-  ) +
+    size = 4) +
   labs(title = "US Cities Distance from National Border",
        col = "Distance (km)") +  ggthemes::theme_map()
 
@@ -194,8 +196,7 @@ ggplot() +
     data = farcities2,
     aes(label = city, geometry = geometry),
     stat = "sf_coordinates",
-    size = 4
-  ) +
+    size = 4) +
   labs(title = "US Cities Distance from State Borders",
        col = "Distance (km)")  +  ggthemes::theme_map()
 
@@ -211,7 +212,7 @@ citydata <- citydata %>%
          dist_mexicoandcanada = units::drop_units(dist_mexicoandcanada))
 
 largestcity = citydata %>%
-    filter(dist_mexicoandcanada < 100) %>% 
+   filter(dist_mexicoandcanada < 100) %>% 
    slice_max(population, n = 5)
 
 ggplot() +
@@ -223,8 +224,7 @@ ggplot() +
     data = largestcity,
     aes(label = city, geometry = geometry),
     stat = "sf_coordinates",
-    size = 4
-  )  +   ggthemes::theme_map() +
+    size = 4)  + ggthemes::theme_map() +
   labs(title = "US Cities equal distance from Canadian and Mexican border ± 100 km")
 
 ```
@@ -255,7 +255,11 @@ string <- "The ACLU estimates 2 in 3 people (roughly 66.7%) live within the 100 
 
 df <- data.frame(numcities, numpeople$`sum(population)`, 100 * percentpeople$`sum(population)`, string)
 
-kableExtra::kable_styling(knitr::kable(df, col.names = c("Total number of cities within 100 mile zone", "Total number of people living within 100 mile zone", "Percent of Population living within 100 mile zone", "" ),format.args = list(big.mark = ","),  align = "l"))
+kableExtra::kable_styling(knitr::kable(df, col.names = c("Total number of cities within 100 mile zone", 
+                                                         "Total number of people living within 100 mile zone",
+                                                         "Percent of Population living within 100 mile zone",
+                                                         ""),
+                                       format.args = list(big.mark = ","),  align = "l"))
 ```
 
 <br>
@@ -276,13 +280,12 @@ ggplot() +
   gghighlight::gghighlight(dist_to_border < 160) +
   scale_color_gradient(low = "orange", high = "darkred") +
   ggthemes::theme_map() +
-   geom_sf(data = mostpopdanger, col = "red", size = 2) +
+  geom_sf(data = mostpopdanger, col = "red", size = 2) +
   ggrepel::geom_label_repel(
     data = mostpopdanger,
     aes(label = city, geometry = geometry),
     stat = "sf_coordinates",
-    size = 4
-  )  +
+    size = 4)  +
   labs(title = "US Cities within 100 miles from National Border",
        col = "Distance (km)")
 
@@ -296,7 +299,7 @@ ggplot() +
 # label the most populous city in each state within the Danger Zone
 mostpopdangerbystate <- citydata %>% 
   filter(dist_to_border < 160) %>% 
-    group_by(state_name) %>% 
+  group_by(state_name) %>% 
   slice_max(population)
 
 ggplot() +
@@ -305,13 +308,12 @@ ggplot() +
   gghighlight::gghighlight(dist_to_border < 160) +
   scale_color_gradient(low = "orange", high = "darkred") +
   ggthemes::theme_map() +
-   geom_sf(data = mostpopdangerbystate, col = "red", size = 2) +
+  geom_sf(data = mostpopdangerbystate, col = "red", size = 2) +
   ggrepel::geom_label_repel(
     data = mostpopdangerbystate,
     aes(label = city, geometry = geometry),
     stat = "sf_coordinates",
-    size = 3
-  )  +
+    size = 3)  +
   labs(title = "US Cities within 100 miles from National Border",
        col = "Distance (km)")
 ```
