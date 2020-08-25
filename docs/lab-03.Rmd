@@ -20,6 +20,8 @@ library(rnaturalearthdata)
 
 ```
 
+<br>
+<br>
 
 ```{r q1, warning=FALSE, message=FALSE}
 
@@ -47,6 +49,7 @@ citydata <- read_csv("~/github/geog-176A-labs/data/uscities.csv") %>%
 
 
 ```{r Q2, warning=FALSE, message=FALSE}
+########################################################
 
 # dissolve state boundaries
 stCONUS <- st_union(CONUS) %>%
@@ -128,6 +131,7 @@ knitr::kable(farCanadacities, caption = "Five US Cities Farthest from Canadian B
 
 
 ```{r Q3, warning=FALSE, message=FALSE}
+########################################################
 
 largestpop <- citydata %>%
   slice_max(population, n = 10)
@@ -150,13 +154,14 @@ ggplot() +
 
 
 ```{r q3 part2, warning=FALSE, message=FALSE}
+########################################################
 
 far_cities2 = citydata %>%
    slice_max(dist_to_border, n = 5)
 
 ggplot() +
   geom_sf(data = stCONUS, lty = 1, size = .5) +
-  geom_sf(data = citydata, aes(col = dist_to_border), size = .1) +
+  geom_sf(data = citydata, aes(col = dist_to_border), size = .3) +
   geom_sf(data = far_cities2, col = "darkred") +
   scale_color_gradient(low = "blue", high = "red") +
   ggthemes::theme_map() +
@@ -174,12 +179,14 @@ ggplot() +
 <br>
 
 ```{r q3 part 3, message=FALSE, warning=FALSE}
+########################################################
+
 farcities2 = citydata %>%
    slice_max(dist_to_state, n = 5)
 
 ggplot() +
   geom_sf(data = stCONUSsb, lty = 1, size = .5) +
-  geom_sf(data = citydata, aes(col = dist_to_state), size = .1) +
+  geom_sf(data = citydata, aes(col = dist_to_state), size = .3) +
   geom_sf(data = farcities2, col = "navy") +
   scale_color_gradient(low = "grey", high = "blue") +
   ggthemes::theme_map() +
@@ -196,6 +203,7 @@ ggplot() +
 <br>
 
 ```{r q3 part4, message=FALSE, warning=FALSE}
+########################################################
 
 citydata <- citydata %>%
   mutate(dist_mexicoandcanada = abs(dist_to_canada - dist_to_mexico),
@@ -208,7 +216,7 @@ largestcity = citydata %>%
 
 ggplot() +
   geom_sf(data = stCONUS, size = .5) +
-  geom_sf(data = citydata, size = .2) +
+  geom_sf(data = citydata, size = .3) +
   gghighlight::gghighlight(dist_mexicoandcanada < 100) +
  geom_sf(data = largestcity, col = "blue", size = 2) +
   ggrepel::geom_label_repel(
@@ -224,6 +232,7 @@ ggplot() +
 <br>
 
 ```{r Q4, warning=FALSE, message=FALSE}
+########################################################
   
 # how many cities are in this 100 mile zone? (100 miles ~ 160 kilometers)
 numcities <- citydata %>% 
@@ -252,6 +261,8 @@ kableExtra::kable_styling(knitr::kable(df, col.names = c("Total number of cities
 <br>
 
 ```{r q4 part 2, warning=FALSE, message=FALSE}
+########################################################
+
 # map highlighting cites within the 100 mile zone of border
 # label the 10 most populous cities in the Danger Zone
 
@@ -261,7 +272,7 @@ mostpopdanger <- citydata %>%
 
 ggplot() +
   geom_sf(data = stCONUSsb, size = .5) +
-  geom_sf(data = citydata, aes(col = dist_to_border), size = .1) +
+  geom_sf(data = citydata, aes(col = dist_to_border), size = .3) +
   gghighlight::gghighlight(dist_to_border < 160) +
   scale_color_gradient(low = "orange", high = "darkred") +
   ggthemes::theme_map() +
@@ -290,7 +301,7 @@ mostpopdangerbystate <- citydata %>%
 
 ggplot() +
   geom_sf(data = stCONUSsb, size = .5) +
-  geom_sf(data = citydata, aes(col = dist_to_border), size = .1) +
+  geom_sf(data = citydata, aes(col = dist_to_border), size = .3) +
   gghighlight::gghighlight(dist_to_border < 160) +
   scale_color_gradient(low = "orange", high = "darkred") +
   ggthemes::theme_map() +
