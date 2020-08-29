@@ -6,8 +6,13 @@ output:
   html_document:
     theme: spacelab
 ---
-***
+`r library(icon)`
+```{r globe, echo=FALSE}
+fa(name = "globe", size = 5, color = "#8E1600")
 
+```
+
+***
 
 ## In this lab:
 
@@ -63,6 +68,7 @@ library(ggrepel)
 library(knitr)
 
 ```
+
 ***
 
 
@@ -84,6 +90,7 @@ Here the North America Equidistant (eqdc) Conic will be used.
 eqdc = '+proj=eqdc +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs'
 
 ```
+
 *****
 
 
@@ -94,6 +101,7 @@ CONUS <- USAboundaries::us_states(resolution = "low") %>%
   st_transform(eqdc)
 
 ```
+
 *****
 
 
@@ -104,6 +112,7 @@ countryboundaries <- rnaturalearthdata::countries110 %>%
   filter(admin %in% c( "Mexico", "United States of America","Canada") ) %>% 
   st_transform(eqdc)
 ```
+
 *****
 
 
@@ -198,7 +207,7 @@ knitr::kable(farMexicocities, caption = "Five US Cities Farthest from Mexican Bo
 
 ```
 
-*****
+***
 
 
 ##### Distance to Canadian Border (km)
@@ -252,7 +261,8 @@ ggplot() +
   labs(title = "10 Largest Cities (by population) in the US", x = "", y = "")
 
 ```
-*****
+
+***
 
 ##### Graphing US City Distance from the National Border with 5 farest cities labeled
 
@@ -278,7 +288,7 @@ ggplot() +
 
 ```
 
-*****
+***
 
 ##### Graphing US City Distance from the Nearest State Border with 5 farest cities labeled
 
@@ -303,7 +313,8 @@ ggplot() +
        col = "Distance (km)")  +  ggthemes::theme_map()
 
 ```
-*****
+
+***
 
 ##### Graphing the Equidistance boundary between Mexico and Canada with 5 most populous cites in this zone labeled
 
@@ -376,7 +387,7 @@ kableExtra::kable_styling(knitr::kable(df, col.names = c("Total number of cities
                                        format.args = list(big.mark = ","),  align = "l"))
 ```
 
-*****
+***
 ##### Labeling 10 most populous cities in the Danger Zone
 
 ```{r q4 part 2, warning=FALSE, message=FALSE}
@@ -406,7 +417,7 @@ ggplot() +
 
 ```
 
-*****
+***
 
 ##### Labeling most populous city by state in the Danger Zone
 
