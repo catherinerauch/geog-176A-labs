@@ -6,40 +6,109 @@ output:
   html_document:
     theme: spacelab
 ---
+***
+
+
+## In this lab:
+
+- building sf objects from R packages and CSVs
+
+- manipulating geometries and coordinate systems, calculating distances
+
+- building maps using ggplot and accessory packages
+
+- examination of a real world application
+
+## Data:
+
+- spatial boundaries of continental USA states
+
+- boundaries of Canada, Mexico and the United States 
+
+- all USA city 
+
+***
+
+### Libraries
+
+##### data wrangling tools
+- library(tidyverse)
+- library(units) 
+
+##### spatial objects
+- library(sf) 
+
+##### data used
+- library(USAboundaries)
+- library(rnaturalearthdata)
+
+##### plots and tables
+- library(gghighlight)
+- library(ggrepel)
+- library(knitr)
 
 ```{r libraries, include=FALSE}
 
-library(tidyverse)
-library(sf)
-library(units)
-library(ggrepel)
-library(gghighlight)
+library(tidyverse) # data wrangling tools
+library(sf) # spatial objects
+library(units) 
+
+# data used
 library(USAboundaries)
-library(USAboundariesData)
 library(rnaturalearthdata)
 
-```
+# plots and tables
+library(gghighlight)
+library(ggrepel)
+library(knitr)
 
-<br>
-<br>
+```
+***
+
+
+### Creating Data
+
+Because distances between features need to be calculated and used, a projection that perserves distances on a national scale is needed. 
+
+Here the North America Equidistant (eqdc) Conic will be used.
+
+- Latitude/Longitude of origin: 40, -96
+- Latitude of first/second standard parallel: 20, 60
+- False Easting: 0
+- False Northing: 0
+- Datum: NAD 83
+- Units: Meters (m)
 
 ```{r q1, warning=FALSE, message=FALSE}
-
 # define projection to be used for distance measurements at the national scale
 eqdc = '+proj=eqdc +lat_0=40 +lon_0=-96 +lat_1=20 +lat_2=60 +x_0=0 +y_0=0 +datum=NAD83 +units=m +no_defs'
 
-# get US state boundaries, filter for states in continental United States 
+```
+*****
+
+
+##### Get US state boundaries, filter for states in continental United States (conus)
+```{r q1 beg, warning=FALSE}
 CONUS <- USAboundaries::us_states(resolution = "low") %>%
   filter(!state_name %in% c( "Puerto Rico", "Alaska","Hawaii")) %>% 
   st_transform(eqdc)
 
-# get country boundaries for mexico, USA, canada
+```
+*****
+
+
+##### Create country boundaries for mexico, USA, canada
+```{r q1 beg2, warning=FALSE}
 countryboundaries <- rnaturalearthdata::countries110 %>% 
   st_as_sf(coords = c("lng", "lat"), crs = 4326) %>%
   filter(admin %in% c( "Mexico", "United States of America","Canada") ) %>% 
   st_transform(eqdc)
+```
+*****
 
-# get city locations from CSV file, filter for states in conus
+
+##### Retrieve city locations from CSV file, filter for states in conus
+```{r q1 beg3, warning=FALSE, message=FALSE}
 citydata <- read_csv("~/github/geog-176A-labs/data/uscities.csv") %>%
   st_as_sf(coords = c("lng", "lat"), crs = 4326) %>% 
   st_transform(eqdc) %>% 
@@ -47,7 +116,10 @@ citydata <- read_csv("~/github/geog-176A-labs/data/uscities.csv") %>%
 
 ```
 
+*****
 
+
+##### Distance to USA Border (coastline or national) (km)
 ```{r Q2, warning=FALSE, message=FALSE}
 ########################################################
 
@@ -68,7 +140,13 @@ far_cities = citydata %>%
 
 knitr::kable(far_cities, caption = "Five US Cities Farthest from a National Border", 
              col.names = c("City", "State", "Distance from Border (km)"))
+```
 
+*****
+
+
+##### Distance to Individual State Border (km)
+```{r Q1 part 2, warning=FALSE, message=FALSE}
 ########################################################
 
 # keep state boundaries
@@ -88,6 +166,14 @@ farcities = citydata %>%
 
 knitr::kable(farcities, caption = "Five US Cities Farthest from a State Border", 
              col.names = c("City", "State", "Distance from State Border (km)"))
+
+```
+
+*****
+
+
+##### Distance to Mexican Border (km)
+```{r Q2 part3, warning=FALSE, message=FALSE}
 
 ########################################################
 
@@ -110,6 +196,14 @@ farMexicocities = citydata %>%
 knitr::kable(farMexicocities, caption = "Five US Cities Farthest from Mexican Border", 
              col.names = c("City", "State", "Distance from Border (km)"))
 
+```
+
+*****
+
+
+##### Distance to Canadian Border (km)
+```{r Q2 part 4, warning=FALSE, message=FALSE}
+
 ########################################################
 
 # keep Canada boundaries 
@@ -131,14 +225,19 @@ knitr::kable(farCanadacities, caption = "Five US Cities Farthest from Canadian B
              col.names = c("City", "State",  "Distance from Border (km)"))
 
 ```
-<br>
 
+***
+
+
+### Visuliazing the data
 
 ```{r Q3, warning=FALSE, message=FALSE}
 ########################################################
 
 largestpop <- citydata %>%
   slice_max(population, n = 10)
+
+# 3 continents, CONUS outline, state boundaries, and 10 largest USA cities (by population)
 
 ggplot() +
   geom_sf(data = stCONUSsb, lty = 1) +
@@ -153,8 +252,9 @@ ggplot() +
   labs(title = "10 Largest Cities (by population) in the US", x = "", y = "")
 
 ```
-<br>
+*****
 
+##### Graphing US City Distance from the National Border with 5 farest cities labeled
 
 ```{r q3 part2, warning=FALSE, message=FALSE}
 ########################################################
@@ -178,7 +278,9 @@ ggplot() +
 
 ```
 
-<br>
+*****
+
+##### Graphing US City Distance from the Nearest State Border with 5 farest cities labeled
 
 ```{r q3 part 3, message=FALSE, warning=FALSE}
 ########################################################
@@ -201,7 +303,9 @@ ggplot() +
        col = "Distance (km)")  +  ggthemes::theme_map()
 
 ```
-<br>
+*****
+
+##### Graphing the Equidistance boundary between Mexico and Canada with 5 most populous cites in this zone labeled
 
 ```{r q3 part4, message=FALSE, warning=FALSE}
 ########################################################
@@ -229,7 +333,17 @@ ggplot() +
 
 ```
 
-<br>
+***
+
+### Examining a Real World Problem
+
+Federal Agencies have claimed basic constitutional rights protected by the Fourth Amendment (protecting Americans from random and arbitrary stops and searches) do not apply fully at our borders.
+Currently, federal regulations give U.S. Customs and Border Protection (CBP) authority to operate within 100 miles of any U.S. "external boundary." For example, federal authorities do not need a warrant or suspicion of wrongdoing to justify conducting what courts have called a “routine search,” such as searching luggage or a vehicle. More information can be found at this [ACLU article](https://www.aclu.org/other/constitution-100-mile-border-zone).
+
+
+#### Quantifing and mapping this Danger *(read border)* Zone
+
+How many cities are in this 100 mile zone? How many people live in a city within 100 miles of the border? These questions are addressed as well as, a map highlighting the cites within the 100 mile zone.
 
 ```{r Q4, warning=FALSE, message=FALSE}
 ########################################################
@@ -262,7 +376,8 @@ kableExtra::kable_styling(knitr::kable(df, col.names = c("Total number of cities
                                        format.args = list(big.mark = ","),  align = "l"))
 ```
 
-<br>
+*****
+##### Labeling 10 most populous cities in the Danger Zone
 
 ```{r q4 part 2, warning=FALSE, message=FALSE}
 ########################################################
@@ -290,8 +405,10 @@ ggplot() +
        col = "Distance (km)")
 
 ```
-<br>
 
+*****
+
+##### Labeling most populous city by state in the Danger Zone
 
 ```{r extra credit, warning=FALSE, message=FALSE}
 ###################################### EXTRA CREDIT
@@ -317,3 +434,7 @@ ggplot() +
   labs(title = "US Cities within 100 miles from National Border",
        col = "Distance (km)")
 ```
+
+
+From these maps it can be seen that the Border Patrol's operations encroach deep into and across the United States, affecting many Americans.
+States like Connecticut, Delaware, Florida, Hawaii, Maine, Massachusetts, New Hampshire, New Jersey, New York, Rhode Island and Vermont lie entirely or almost entirely within this area. With some of the largest U.S. metropolitan areas (New York City, Los Angeles, Chicago, Philadelphia) falling inside this zone.
