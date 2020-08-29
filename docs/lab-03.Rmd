@@ -1,19 +1,12 @@
 ---
 title: "Geography 176A"
-author: "[Catherine Rauch](https://catherinerauch.github.io)"
 subtitle: 'Lab 03: Distances, Projections and the Danger Zone'
+author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
 output:
   html_document:
     theme: spacelab
 ---
-`r library(icon)`
-```{r globe, echo=FALSE}
-fa(name = "globe", size = 5, color = "#8E1600")
-
-```
-
 ***
-
 ## In this lab:
 
 - building sf objects from R packages and CSVs
@@ -24,6 +17,11 @@ fa(name = "globe", size = 5, color = "#8E1600")
 
 - examination of a real world application
 
+```{r, echo=FALSE, out.width="50%",out.height="40%",fig.cap="   ",fig.align='left'}
+knitr::include_graphics("C:/Users/Catherine/Documents/github/geog-176A-labs/docs/USthememap.jpg")
+```
+
+***
 ## Data:
 
 - spatial boundaries of continental USA states
@@ -434,7 +432,7 @@ ggplot() +
   geom_sf(data = stCONUSsb, size = .5) +
   geom_sf(data = citydata, aes(col = dist_to_border), size = .3) +
   gghighlight::gghighlight(dist_to_border < 160) +
-  scale_color_gradient(low = "orange", high = "darkred") +
+  scale_color_viridis_c(option = "C") +
   ggthemes::theme_map() +
   geom_sf(data = mostpopdangerbystate, col = "red", size = 2) +
   ggrepel::geom_label_repel(
@@ -444,6 +442,7 @@ ggplot() +
     size = 3)  +
   labs(title = "US Cities within 100 miles from National Border",
        col = "Distance (km)")
+
 ```
 
 
