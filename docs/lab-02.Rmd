@@ -1,12 +1,48 @@
 ---
 title: "Geography 176A"
-subtitle: "Lab 03: COVID-19 Pandemic"
-author: "[Catherine Rauch](https://catherinerauch.github.io)"
-date: "8/13/2020"
+subtitle: "Lab 02: COVID-19 Pandemic"
+author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
 output: html_document
 html_document:
-    theme: lumen
+    theme: spacelab
 ---
+***
+## In this lab:
+
+##### - manipulation and examination of New York Times COVID cases dataset
+
+##### - creating visualizations and tables to report findings
+
+##### - scaling by population and calculation of rolling averages 
+
+```{r, echo=FALSE, out.width="40%",out.height="30%",fig.cap="  ",fig.align='left'}
+knitr::include_graphics("C:/Users/Catherine/Documents/github/geog-176A-labs/docs/covidplot.jpg")
+```
+
+***
+## Data:
+
+##### - [dataset](https://raw.githubusercontent.com/nytimes/covid-19-data/master) with cumulative counts of coronavirus cases and deaths for each geography 
+
+##### - will use the historic (final counts at end of each day), county level data which is stored as an updating CSV
+
+
+***
+
+## Libraries
+
+##### data wrangling tools
+- library(tidyverse)
+
+##### read files
+- library(readxl) 
+
+##### rolling averages
+- library(zoo)
+
+##### plots and tables
+- library(knitr)
+
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
@@ -14,11 +50,46 @@ knitr::opts_chunk$set(echo = TRUE)
 ```
 
 ```{r packages, include=FALSE}
+
 library(tidyverse) # data wrangling and visualization
 library(knitr) # make nice tables
 library(readxl) # read excel files
 library(zoo) # rolling averages
+
 ```
+
+***
+
+#### The California Department of Public Health maintains a [current watch list](https://covid19.ca.gov/safer-economy/) of counties that are being monitored for worsening coronavirus trends. There are six criteria used to place counties on the watch list:
+
+
+
+##### -- Doing fewer than 150 tests per 100,000 residents daily (over a 7-day average)
+
+##### -- More than 100 new cases per 100,000 residents over the past 14 days…
+
+##### -- 25 new cases per 100,000 residents and an 8% test positivity rate
+
+##### -- 10% or greater increase in COVID-19 hospitalized patients over the past 3 days
+
+##### -- Fewer than 20% of ICU beds available
+
+##### -- Fewer than 25% ventilators available
+
+***
+
+
+#### Here, condition 2 will be examined with tables containing:
+
+
+
+##### -- total NEW cases in the 5 worst counties
+
+##### -- cumulative cases in the 5 worst counties
+
+##### -- number of unsafe counties
+
+***
 
 ```{r Q1, warning=FALSE,echo=FALSE, message=FALSE}
 
@@ -29,9 +100,6 @@ stateofinterest <- 'California'
 ```
 
 ```{r q1 cont, warning=FALSE, message=FALSE}
-
-
-# Question 1
 
 addednewcases <- coviddata %>% # filter data by state of interest
   filter(state == stateofinterest) %>%
@@ -50,15 +118,24 @@ mostcumulativecases <- addednewcases %>% # finds top 5 counties with most cumula
   slice_max(cases, n = 5) %>%
   select(county, cases)
 
+```
+***
+##### **Los Angeles, San Bernardino, San Diego, Fresno and Orange County** are the counties with the most new cases reported daily. Both Los Angeles and San Bernado reported over a thousand.
+
+***
+```{r table, echo=FALSE}
 knitr::kable(mostnewcases, caption = "Most New Cases California Counties", col.names = c("County", "New Cases"),
              format.args = list(big.mark = ","))
 
 
 ```
+***
 
-**Los Angeles, San Bernardino, Riverside, Fresno and Orange County** are the counties with the most new cases reported daily. Both Los Angeles and San Bernado reported over a thousand.
+##### **Los Angeles, Riverside, Orange, San Bernardino, and San Diego** are the counties with the most total reported cases, this could be due to be being the largest 5 counties in California. Los Angeles is the only reporting more than 50,000 cases currently. 
 
-```{r table2}
+***
+
+```{r table2, echo=FALSE}
 
 
 knitr::kable(mostcumulativecases, caption = "Most Cumulative Cases California Counties",
@@ -67,8 +144,9 @@ knitr::kable(mostcumulativecases, caption = "Most Cumulative Cases California Co
 
 ```
 
-**Los Angeles, Riverside, Orange, San Bernardino, and San Diego** are the counties with the most total reported cases, this could be due to be being the largest 5 counties in California. Los Angeles is the only reporting more than 50,000 cases currently. 
+***
 
+#### Per Capita Calculations
 
 ```{r Q1 part2, warning=FALSE, message=FALSE}
 
@@ -102,18 +180,33 @@ mostcumulativecasespc <-CovidandPopulation %>% # finds top 5 counties with cumul
   slice_max(newcasepercap, n = 5) %>%
   select(county, newcasepercap)
 
+
+```
+
+***
+
+##### Examining the same data with respect to population size, it can be seen that the 5 highest counties of new daily cases per capita are **Imperial, Kings, Kern, Tulare and Merced County.** While most total cases per capita are **San Bernardino, Stanislaus, Kings, Fresno, and Marin County.**
+
+***
+```{r 2, echo=FALSE}
+
 knitr::kable(mostnewcasespc, caption = "Most New Cases California Counties Per Capita", col.names = c("County", "New Cases Per Capita"))
 
 
 ```
-
-Examining the same data with respect to population size, it can be seen that the 5 highest counties of new daily cases per capita are **Imperial, Kings, Kern, Tulare and Merced County.** While most total cases per capita are **Inyo, Stanislaus, Fresno, Kings, and San Bernardino County.**
-
-```{r Q1 part4, warning=FALSE, message=FALSE}
+***
+```{r Q1 part4, warning=FALSE, message=FALSE, echo=FALSE}
 
 
 knitr::kable(mostcumulativecasespc, caption = "Most Cumulative Cases California Counties Per Capita",
              col.names = c("County", "Total Cases Per Capita"))
+
+
+```
+
+***
+
+```{r 3, warning=FALSE, message=FALSE}
 
 numofdays <- 14
 
@@ -122,18 +215,21 @@ greaterthan100 <- CovidandPopulation %>%
   group_by(county, date) %>%
   summarise(ncases =  100000 * (sum(newCases) / pop2019)) %>%
   filter(ncases > 100)
+```
+***
 
+##### 3 counties have more than 100 cases per 100,000 residents in the past 14 days, that leaves **55** counties deemed as safe.
+***
+
+```{r 4, echo=FALSE}
 knitr::kable(greaterthan100, caption = "California Counties with > 100 cases within 2 weeks ", col.names = c("County", "Date", "Cases Per 100,000 Residents"))
-
-
 ```
 
-##### 15 counties have more than 100 cases per 100,000 residents in the past 14 days, that leaves **43** counties deemed as safe.
+***
+
+### Examining impact of scale on COVID cases
 
 ```{r Q2, warning=FALSE, message=FALSE}
-
-
-## Question 2
 
 statesofinterest <- c("New York", "California", "Louisiana","Florida")
 
@@ -141,13 +237,14 @@ coviddatastate <- coviddata %>%
   filter(state %in% statesofinterest) %>%
   group_by(state, date) %>%
   summarise(cases = sum(cases)) %>%
-  mutate(newCases = cases - lag(cases),  roll7 = rollmean(newCases, 7, fill = NA, align="right")) %>% # creates new column withe daily new cases
+  # creates new column withe daily new cases
+  mutate(newCases = cases - lag(cases),  roll7 = rollmean(newCases, 7, fill = NA, align="right")) %>%
   ungroup()
 
   coviddatastate %>%
   ggplot(aes(x = date, y = newCases)) +  geom_col(aes(y = newCases, col = state))+
   geom_line(aes(col = state)) + geom_line(aes(y = roll7), size = 1) +
-  facet_grid(~state, scale = "free_y", space = "free_y") + ggthemes::theme_solarized()+
+  facet_wrap(~state, nrow = 2) + ggthemes::theme_economist_white()+ ggthemes::scale_color_few() +
   theme(legend.position = "bottom") +
   theme(legend.position = "NA") +
   labs(title = "Daily new cases by State", y = "Daily New Count", x = "Date",
@@ -155,29 +252,28 @@ coviddatastate <- coviddata %>%
   
 ```
 
+
+***
+
+
 ```{r Q2 part 2,warning=FALSE, message=FALSE}
 
 coviddatastate %>%
   inner_join(populationestimates, by = c("state" = "Area_Name") ) %>%
   group_by(state, date) %>%
   summarise(newcases = sum(newCases), pop2019, .groups = "drop") %>%
-  mutate(newcasepercap = (newcases / pop2019), roll7 = rollmean(newcasepercap, 7, fill = NA, align="right")) %>%
+  mutate(newcasepercap = (newcases / pop2019), roll7 = rollmean(newcasepercap, 7, fill = NA, align="right"))%>%
   ggplot(aes(x = date, y = newcasepercap)) +
   geom_col(aes(y = newcasepercap, col = state))+
   geom_line(aes(col = state)) + geom_line(aes(y = roll7), size = 1)+
-  facet_grid(~state) + ggthemes::theme_solarized() + ggthemes::scale_color_gdocs() +
+  facet_wrap(~state, nrow = 2) + ggthemes::theme_economist_white() + ggthemes::scale_color_few() +
   theme(legend.position = "none") +
   labs(title = "Daily new cases Per Capita by State", y = "Daily New Count Per Capita", x = "Date",
        caption = "Lab 02")
 
-
 ```
 
+***
 
-##### This graph was scaled by population, and it can be seen that Louisiana's situation is more dire while California's appear better. 
-##### California has the largest population among these states and after scaling, it can be seen that they have had the smallest reported spike in daily cases. 
-##### New York and Florida are close together in population and appear to have a similar sized spike in daily cases. 
-##### Whereas before the scaling it appeared Florida had the largest spike, and California and New York's was similar.
-##### Although New York's was in April while Florida's happened in July.
-##### Louisiana has the smallest population by far with roughly 4.6 million (New York, California and Florida have a population greater than 19 million) but, after scaling, has the largest spike in daily new cases per capita.
+##### This graph was scaled by population, and it can be seen that Louisiana's situation is more dire while California's appears better. California has the largest population among these states and after scaling, it can be seen that they have had the smallest reported spike in daily cases. New York and Florida are close together in population and appear to have a similar sized spike in daily cases. Whereas before the scaling it appeared Florida had the largest spike, and California and New York's was similar. Although New York's was in April while Florida's happened in July. Louisiana has the smallest population by far with roughly 4.6 million (New York, California and Florida have a population greater than 19 million) but, after scaling, has the largest spike in daily new cases per capita.
 
