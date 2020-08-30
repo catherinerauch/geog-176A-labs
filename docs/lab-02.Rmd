@@ -7,6 +7,10 @@ html_document:
     theme: spacelab
 ---
 ***
+##### *This report is current as of 8/30/2020*
+
+***
+
 ## In this lab:
 
 ##### - manipulation and examination of New York Times COVID cases dataset
@@ -64,17 +68,17 @@ library(zoo) # rolling averages
 
 
 
-##### -- Doing fewer than 150 tests per 100,000 residents daily (over a 7-day average)
+##### 1. Doing fewer than 150 tests per 100,000 residents daily (over a 7-day average)
 
-##### -- More than 100 new cases per 100,000 residents over the past 14 days…
+##### 2. More than 100 new cases per 100,000 residents over the past 14 days…
 
-##### -- 25 new cases per 100,000 residents and an 8% test positivity rate
+##### 3. 25 new cases per 100,000 residents and an 8% test positivity rate
 
-##### -- 10% or greater increase in COVID-19 hospitalized patients over the past 3 days
+##### 4. 10% or greater increase in COVID-19 hospitalized patients over the past 3 days
 
-##### -- Fewer than 20% of ICU beds available
+##### 5. Fewer than 20% of ICU beds available
 
-##### -- Fewer than 25% ventilators available
+##### 6. Fewer than 25% ventilators available
 
 ***
 
@@ -146,7 +150,7 @@ knitr::kable(mostcumulativecases, caption = "Most Cumulative Cases California Co
 
 ***
 
-#### Per Capita Calculations
+### Per Capita Calculations
 
 ```{r Q1 part2, warning=FALSE, message=FALSE}
 
@@ -275,5 +279,5 @@ coviddatastate %>%
 
 ***
 
-##### This graph was scaled by population, and it can be seen that Louisiana's situation is more dire while California's appears better. California has the largest population among these states and after scaling, it can be seen that they have had the smallest reported spike in daily cases. New York and Florida are close together in population and appear to have a similar sized spike in daily cases. Whereas before the scaling it appeared Florida had the largest spike, and California and New York's was similar. Although New York's was in April while Florida's happened in July. Louisiana has the smallest population by far with roughly 4.6 million (New York, California and Florida have a population greater than 19 million) but, after scaling, has the largest spike in daily new cases per capita.
+This graph was scaled by population, and it can be seen that Louisiana's situation is more dire while California's appears better. California has the largest population among these states and after scaling, it can be seen that they have had the smallest reported spike in daily cases. New York and Florida are close together in population and appear to have a similar sized spike in daily cases. Whereas before the scaling it appeared Florida had the largest spike, and California and New York's was similar. Although New York's was in April while Florida's happened in July. Louisiana has the smallest population by far with roughly 4.6 million (New York, California and Florida have a population greater than 19 million) but, after scaling, has the largest spike in daily new cases per capita.
 
