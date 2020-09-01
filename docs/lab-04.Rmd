@@ -259,7 +259,7 @@ gridExtra::grid.arrange(plot_pip(v_pip, "Voronoi Coverage"), plot_pip(t_pip, "Tr
 
 ##### Comment on the influence of the tessellated surface in the visualization of point counts. How does this related to the MAUP problem. Moving forward you will only use one tessellation, which will you chose and why?
 
-As the each tessellation aggregates the data differently ie the shape and scale of the aggregation unit it creates bias. As can be see in the Grid and Hexagonal coverages, where they appeared to increase the top level of point counts, meaning the high end of the gradient was 500-600 this caused the plot to loose some of the original definition in the west side of the country. While Voroni and triangulation appeared to decrease the top level of point counts it was a much smaller difference (original county data: 300 to voroni/triangulation: 200). This allowed these graphs to look similar to the original data although it was aggregated differently.
+As each tessellation aggregates the data differently ie the shape and scale of the aggregation unit it creates bias. As can be seen in the Grid and Hexagonal coverages, where they appeared to increase the top level of point counts, meaning the high end of the gradient was 500-600 this caused the plot to lose some of the original definition in the west side of the country. While Voroni and triangulation appeared to decrease the top level of point counts it was a much smaller difference (original county data: 300 to voroni/triangulation: 200). This allowed these graphs to look similar to the original data although it was aggregated differently.
 
 Moving forward I will be using the Voroni Tessellation because it had slightly fewer features but was able to protect the distribution of the original data not just in the graph but in regards to mean, total area and standard deviation compared to the other tessellations.
 
@@ -302,7 +302,7 @@ gridExtra::grid.arrange(plot_pip(rec_pip, 'Distribution of Recreation Dams') + g
 
 ```
 
-##### Comment of geographic distribution of dams you found. Does it make sense? How does the distribution of dams coiencide with other geogaphic factors such as river systems, climate, etc?
+##### Comment of geographic distribution of dams you found. Does it make sense? How does the distribution of dams coincide with other geogaphic factors such as river systems, climate, etc?
 
 The water supply dams appear to be concentrated heavily in California and upper mid possibly Wyoming, Nebraska, South Dakota. There are a few scattered in Texas and the north east around Massachusetts, Connecticut and New York. 
 The large amount of water supply dams in California and even in Texas is likely because they are both drier states. Especially in California where droughts are common so access to a water supply dam would be relevant.
