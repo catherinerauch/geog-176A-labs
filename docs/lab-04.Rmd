@@ -193,7 +193,7 @@ and	8,545,891 respectively.
 
 ```{r q3 part1, message=FALSE, warning=FALSE}
 
-NID2019 <- read_excel("data/NID2019_U.xlsx")
+NID2019 <- read_excel("~/github/geog-176A-labs/data/NID2019_U.xlsx")
 
 NID2019 <-  NID2019 %>% 
   filter(!is.na(NID2019$LATITUDE) == TRUE)
