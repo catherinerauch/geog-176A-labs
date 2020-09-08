@@ -31,7 +31,7 @@ library(sp)
 
 ```{r Q1, message=FALSE, warning=FALSE}
 
-# read uscities.csv data into R, make it a sf object, and filter to Goleta
+# read uscities.csv data into R, make it a sf object, and filter to Palo
 paloIowa <- read_csv("~/github/geog-176A-labs/data/uscities.csv") %>%
   st_as_sf(coords = c("lng", "lat"), crs = 4326) %>%
   filter(city == "Palo")%>%
@@ -87,17 +87,17 @@ b <- stack(st) %>%
 ```
 
 ***
-- What are the dimensions of your stacked image? What is the CRS?
+> What are the dimensions of your stacked image? What is the CRS?
 
-7,811 rows with 7,861 columns and 6 layers for a total of 59,996,291 cells.
+##### 7,811 rows with 7,861 columns and 6 layers for a total of 59,996,291 cells.
 
-- What is the cell resolution?
+> What is the cell resolution?
 
-WGS84 
+##### WGS84 
 
-- What is the cell resolution?
+> What is the cell resolution?
 
-30m by 30m
+##### 30m by 30m
 
 
 ***
@@ -119,21 +119,21 @@ cropped <- crop(b, AOIcrop)
 
 - What are the dimensions of your cropped image stack?
 
-340 rows with 346 columns and 6 layers for a total of 117,640 cells.
+    340 rows with 346 columns and 6 layers for a total of 117,640 cells.
 
 - What is the CRS?
 
-WGS84
+    WGS84
 
 - What is the cell resolution?
 
-30m by 30m
+    30m by 30m
 
 ***
 
 ### Question 3
 
-#### Rename raster stack to correspaoning band names and plot band combinations
+#### rename raster stack to correspaoning band names and plot band combinations
 
 ```{r q3, warning=FALSE, message=FALSE}
 
@@ -163,15 +163,15 @@ par(op)
 ```
 
 ***
-Describe the purpose of applying a color stretch.
+> Describe the purpose of applying a color stretch.
 
-A color stretch increases the color range of the pixels and improves the contrast and clarity.
+##### A color stretch increases the color range of the pixels and improves the contrast and clarity.
 
 ***
 
 ### Question 4
 
-#### Create 5 new rasters using formulas for NDVI, NDWI, MNDWI, WRI and SWI
+#### create 5 new rasters using formulas for NDVI, NDWI, MNDWI, WRI and SWI
 
 ```{r q4, warning=FALSE, message=FALSE}
 
@@ -197,9 +197,6 @@ plot(stackedraster, col = colorRampPalette(c("blue", "white", "red"))(256))
 
 ```
 
-***
-
-# Describe the 5 images. How are they simular and where do they deviate?
 
 ***
 
@@ -262,7 +259,7 @@ binary_swi[is.na(values(binary_swi))] <- 0
 ### Question 5
 
 
-#### Extract values from 6-band raster stack  
+#### extract values from 6-band raster stack  
 ```{r q5, message=FALSE, warning=FALSE}
 
 set.seed(20200907)
@@ -281,9 +278,9 @@ values <- na.omit(values)
 
 ***
 
-What do the dimensions of the extracted values tell you about how the data was extracted?
+> What do the dimensions of the extracted values tell you about how the data was extracted?
 
-Before the values were extracted the raster had 340 rows and 346 columns and 6 layers. After the values were extracted it had 117,640 rows and 6 columns. The layers became columns and the number of cells became the number of rows. 
+##### Before the values were extracted the raster had 340 rows and 346 columns and 6 layers. After the values were extracted it had 117,640 rows and 6 columns. The layers became columns and the number of cells became the number of rows. 
 
 ***
 
@@ -338,7 +335,7 @@ plot(summedfloods, col = blues9, title = "Flood Uncertanity")
 
 ***
 
-#### create pannable map
+#### create interactive map
 
 ```{r q6 part2, message=FALSE, warning=FALSE}
 
