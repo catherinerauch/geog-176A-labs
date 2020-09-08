@@ -1,0 +1,354 @@
+---
+title: "Geography 176A"
+author: "[Catherine Rauch](https://catherinerauch.github.io)"
+subtitle: 'Lab 05'
+output:
+  html_document:
+    theme: spacelab
+---
+
+
+***
+
+### Libraries
+
+```{r setup, message=FALSE}
+
+library(raster) # Raster Data handling
+library(tidyverse) # Data Manipulation
+library(getlandsat) # keyless Landsat data (2013-2017)
+library(sf) # Vector data processing
+library(mapview) # Rapid Interactive visualization
+library(kableExtra)
+
+```
+
+*** 
+### Question 1
+
+#### define and create AOI - Palo, Iowa
+
+```{r Q1, message=FALSE, warning=FALSE}
+
+# read uscities.csv data into R, make it a sf object, and filter to Goleta
+paloIowa <- read_csv("~/github/geog-176A-labs/data/uscities.csv") %>%
+  st_as_sf(coords = c("lng", "lat"), crs = 4326) %>%
+  filter(city == "Palo")%>%
+  # transform to CRS:5070 and create a 5 km buffer
+  st_transform(5070) %>%
+  st_buffer(5000) %>%
+  # get bounding box of buffer and make bbox object a sfc and then sf object
+  st_bbox() %>%
+  st_as_sfc() %>%
+  st_as_sf()
+
+```
+***
+```{r no, include=FALSE}
+
+newbox <- paloIowa %>%
+  st_transform(4326) %>%
+  st_bbox()
+
+landstatdata <- getlandsat::lsat_scenes()
+
+filtered <- landstatdata %>%
+  filter(as.Date(acquisitionDate) == "2016-09-26") %>%
+  filter(min_lat <= newbox$ymin) %>%
+  filter(min_lon <= newbox$xmin) %>%
+  filter(max_lon >= newbox$xmax) %>%
+  filter(max_lat >= newbox$ymax)
+
+```
+
+### Question 2
+
+#### download/cache files and stack raster files
+
+```{r q1 part 2, warning=FALSE, message=FALSE}
+
+data <- write.csv(filtered, file = "data/palo-flood-scene.csv")
+
+metadata <- read_csv("data/palo-flood-scene.csv")
+
+pfiles <- lsat_scene_files(metadata$download_url) %>%
+  filter(grepl(paste0('B',1:6,'.TIF$', collapse = '|'), file)) %>%
+  arrange(file) %>%
+  pull(file)
+
+############################
+
+st <- sapply(pfiles, lsat_image)
+
+b <- stack(st) %>%
+  setNames(paste0('band', 1:6))
+
+```
+
+***
+What are the dimensions of your stacked image? What is the CRS?
+
+7,811 rows with 7,861 columns and 6 layers for a total of 59,996,291 cells.
+
+What is the cell resolution?
+
+WGS84 
+
+What is the cell resolution?
+
+30m by 30m
+
+
+***
+
+
+#### crop raster stack to AOI
+
+```{r q2, warning=FALSE, message=FALSE}
+
+
+AOIcrop <- paloIowa %>%
+  st_as_sf() %>%
+  st_transform(crs(b))
+
+cropped <- crop(b, AOIcrop)
+
+```
+***
+
+What are the dimensions of your cropped image stack?
+
+340 rows with 346 columns and 6 layers for a total of 117,640 cells.
+
+What is the CRS?
+
+WGS84
+
+What is the cell resolution?
+
+30m by 30m
+
+***
+
+### Question 3
+
+#### Rename raster stack to correspaoning band names and plot band combinations
+
+```{r q3, warning=FALSE, message=FALSE}
+
+rasterstack <- cropped %>%
+  setNames(c('Coastal aerosol', 'Blue', 'Green', 'Red', 'Near Infrared', 'SWIR 1'))
+
+op <- par(mfrow = c(1, 2),
+          pty = "s")
+
+plotRGB(rasterstack, 4, 3, 2)
+plotRGB(rasterstack, 5, 4, 2)
+plotRGB(rasterstack, 5, 6, 4)
+plotRGB(rasterstack, 1, 2, 6)
+
+
+##############################
+
+
+plotRGB(rasterstack, 4, 3, 2, stretch = 'hist')
+plotRGB(rasterstack, 5, 4, 2, stretch = 'lin')
+plotRGB(rasterstack, 5, 6, 4, stretch = 'hist')
+plotRGB(rasterstack, 1, 2, 6, stretch = 'lin')
+
+par(op)
+
+
+```
+
+***
+Describe the purpose of applying a color stretch.
+
+A color stretch increases the color range of the pixels and improves the contrast and clarity.
+
+***
+
+### Question 4
+
+#### Create 5 new rasters using formulas for NDVI, NDWI, MNDWI, WRI and SWI
+
+```{r q4, warning=FALSE, message=FALSE}
+
+normalized_dvi <- (rasterstack$Near.Infrared - rasterstack$Red) / (rasterstack$Near.Infrared + rasterstack$Red)
+
+normalized_dwi <-  (rasterstack$Green - rasterstack$Near.Infrared) / (rasterstack$Green + rasterstack$Near.Infrared)
+
+modified_ndwi <-  (rasterstack$Green - rasterstack$SWIR.1) / (rasterstack$Green + rasterstack$SWIR.1)
+
+waterratioindex <- (rasterstack$Green + rasterstack$Red) / (rasterstack$Near.Infrared + rasterstack$SWIR.1)
+
+simplewaterindex <- 1 / ( sqrt(rasterstack$Blue - rasterstack$SWIR.1) )
+
+
+stackedraster <- stack(normalized_dvi, normalized_dwi, modified_ndwi, waterratioindex, simplewaterindex) %>%
+  setNames(c('Normalized Difference Vegetation',
+             'Normalized Difference Water',
+             'Mod Normalized Difference Water',
+             'Water Ratio', 'Simple Water'))
+
+plot(stackedraster, col = colorRampPalette(c("blue", "white", "red"))(256))
+
+
+```
+
+***
+
+# Describe the 5 images. How are they simular and where do they deviate?
+
+***
+
+#### create flooding thresholds for the rasters
+
+```{r q4 part2, message=FALSE, warning=FALSE}
+
+threshold_ndvi <- function(x) {
+  ifelse( x <= 0, 1, 0)
+}
+
+threshold_ndwi <- function(x) {
+  ifelse( x >= 0, 1, 0)
+}
+
+threshold_mndwi <- function(x) {
+  ifelse( x >= 0, 1, 0)
+}
+
+threshold_wri <- function(x) {
+  ifelse( x >= 1, 1, 0)
+}
+
+threshold_swi <- function(x) {
+  ifelse( x <= 5, 1, 0)
+}
+
+
+binary_ndvi <- calc(normalized_dvi, threshold_ndvi)
+
+binary_ndwi <- calc(normalized_dwi, threshold_ndwi)
+
+binary_mndwi <- calc(modified_ndwi, threshold_mndwi)
+
+binary_wri <- calc(waterratioindex, threshold_wri)
+
+binary_swi <- calc(simplewaterindex, threshold_swi)
+
+
+
+binarystack <- stack(c(binary_ndvi, binary_ndwi, binary_mndwi, binary_wri, binary_swi)) %>%
+  setNames(c('Normalized Difference Vegetation',
+             'Normalized Difference Water',
+             'Mod Normalized Difference Water',
+             'Water Ratio', 'Simple Water'))
+
+plot(binarystack, col = colorRampPalette(c("white","blue"))(256))
+
+
+binary_ndvi[is.na(values(binary_ndvi))] <- 0
+binary_ndwi[is.na(values(binary_ndwi))] <- 0
+binary_mndwi[is.na(values(binary_mndwi))] <- 0
+binary_wri[is.na(values(binary_wri))] <- 0
+binary_swi[is.na(values(binary_swi))] <- 0
+
+```
+
+***
+
+### Question 5
+
+
+#### Extract values from 6-band raster stack  
+```{r q5, message=FALSE, warning=FALSE}
+
+set.seed(20200907)
+
+
+values <- getValues(rasterstack)
+
+dim(values)
+dim(rasterstack)
+
+idx <- which(!is.na(values))
+values <- na.omit(values)
+
+
+```
+
+***
+
+What do the dimensions of the extracted values tell you about how the data was extracted?
+
+Before the values were extracted the raster had 340 rows and 346 columns and 6 layers. After the values were extracted it had 117,640 rows and 6 columns. The layers became columns and the number of cells became the number of rows. 
+
+***
+
+#### create new kmeans raster object
+
+```{r q4 part 2, message=FALSE, warning=FALSE}
+
+kmeans <- kmeans(values, centers = 10)
+
+kmeanraster <- rasterstack$Coastal.aerosol
+values(kmeanraster) <- NA
+kmeanraster[idx] <- kmeans$cluster
+
+
+##############################
+
+
+table <- table(getValues(binary_ndvi), getValues(kmeanraster))
+
+
+kmeanraster[kmeanraster != which.max(table)] <- 0
+kmeanraster[kmeanraster != 0] <- 1
+
+
+binarystack <- raster::addLayer(binarystack, kmeanraster)
+
+
+plot(binarystack, col = colorRampPalette(c("white", "blue"))(256))
+
+
+```
+
+***
+### Question 6
+
+
+#### calculate the total area of floods and visualize uncertainty in the classifications
+```{r q6, message=FALSE, warning=FALSE}
+
+area <- cellStats(binarystack, 'sum') * (30^2)
+
+kable_styling(kable(data.frame(area), col.names = ('Area'),
+                    caption = 'Total Area of the Flooded Cells'))
+
+
+####################
+
+summedfloods <- calc(binarystack, fun = sum) 
+plot(summedfloods, col = blues9, title = "Flood Uncertanity")
+
+```
+
+***
+
+#### create pannable map
+
+```{r q6 part2, message=FALSE, warning=FALSE}
+
+summedfloods[summedfloods == 0] <- NA
+
+
+pal <- mapviewPalette("mapviewTopoColors")
+mapview(summedfloods, col = pal)
+
+```
+
+***
+
+# Why are some of the cell values not an even number?
