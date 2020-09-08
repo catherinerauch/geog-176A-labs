@@ -20,6 +20,7 @@ library(getlandsat) # keyless Landsat data (2013-2017)
 library(sf) # Vector data processing
 library(mapview) # Rapid Interactive visualization
 library(kableExtra)
+library(sp)
 
 ```
 
@@ -67,9 +68,9 @@ filtered <- landstatdata %>%
 
 ```{r q1 part 2, warning=FALSE, message=FALSE}
 
-data <- write.csv(filtered, file = "data/palo-flood-scene.csv")
+data <- write.csv(filtered, file = "C:/Users/Catherine/Documents/github/geog-176A-labs/data/palofloodscene.csv")
 
-metadata <- read_csv("data/palo-flood-scene.csv")
+metadata <- read_csv("~/github/geog-176A-labs/data/palofloodscene.csv")
 
 pfiles <- lsat_scene_files(metadata$download_url) %>%
   filter(grepl(paste0('B',1:6,'.TIF$', collapse = '|'), file)) %>%
@@ -86,15 +87,15 @@ b <- stack(st) %>%
 ```
 
 ***
-What are the dimensions of your stacked image? What is the CRS?
+- What are the dimensions of your stacked image? What is the CRS?
 
 7,811 rows with 7,861 columns and 6 layers for a total of 59,996,291 cells.
 
-What is the cell resolution?
+- What is the cell resolution?
 
 WGS84 
 
-What is the cell resolution?
+- What is the cell resolution?
 
 30m by 30m
 
@@ -116,15 +117,15 @@ cropped <- crop(b, AOIcrop)
 ```
 ***
 
-What are the dimensions of your cropped image stack?
+- What are the dimensions of your cropped image stack?
 
 340 rows with 346 columns and 6 layers for a total of 117,640 cells.
 
-What is the CRS?
+- What is the CRS?
 
 WGS84
 
-What is the cell resolution?
+- What is the cell resolution?
 
 30m by 30m
 
@@ -349,6 +350,3 @@ mapview(summedfloods, col = pal)
 
 ```
 
-***
-
-# Why are some of the cell values not an even number?
