@@ -9,17 +9,18 @@ output:
 
 ***
 
-## In this lab:
-
 ```{r, echo=FALSE, out.width="50%",out.height="40%",fig.cap="   ",fig.align='left'}
 knitr::include_graphics("C:/Users/Catherine/Documents/github/geog-176A-labs/img/lab4plot.png")
 ```
 
-##### - visualizing distribution of dams and there purpose across the US
+
+## In this lab:
+
+##### - visualizing distribution of dams and their purpose across the US
 
 ##### - impacts of tessellated surfaces and the modifiable areal unit problem 
 
-##### - writing functions to preform repative tasks. 
+##### - writing functions to preform repetitive tasks. 
 
 ##### - consideration of feature aggregation/simplification, and spatial joins
 

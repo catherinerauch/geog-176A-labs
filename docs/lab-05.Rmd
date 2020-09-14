@@ -8,45 +8,41 @@ output:
 ---
 ***
 
-## In this lab:
-
 ```{r, echo=FALSE, out.width="40%",out.height="30%",fig.cap="  ",fig.align='left'}
 knitr::include_graphics(c("C:/Users/Catherine/Documents/github/geog-176A-labs/img/lab5plot.png"))
 ```
+
+
+## In this lab:
 
 #### - create multiband raster data to detect and analyze a flood event
 
 #### - create flood images using mutliband Landsat Imagery, thresholding, and classification methods.
 
-#### - examine impacts on the town of Palo in Iowa 
+#### - examine impacts on the town of Palo, Iowa 
 
 
 ***
 
 ### Libraries
 
-
 ##### Raster Data handling
-##### - library(raster) 
-
+- library(raster) 
 
 ##### Data Manipulation
-##### - library(tidyverse)
-
+- library(tidyverse)
 
 ##### keyless Landsat data (2013-2017)
-##### - library(getlandsat)
-
+- library(getlandsat)
 
 ##### Vector data processing
-##### - library(sf)
-
+- library(sf)
 
 ##### Rapid Interactive visualization
-##### - library(mapview)
+- library(mapview)
 
 ***
-```{r setup, message=FALSE, include = FALSE}
+```{r setup, message=FALSE, include = FALSE, warning=FALSE}
 
 library(raster) # Raster Data handling
 library(tidyverse) # Data Manipulation
@@ -290,6 +286,8 @@ binary_swi[is.na(values(binary_swi))] <- 0
 
 ```
 
+In the above plot, thresholds were applied to their respective raster. Each method used a threshold to convert the flood data to binary data, with blue meaning that cell is flooded and white meaning it is not. 
+
 ***
 
 ### Question 5
@@ -353,7 +351,7 @@ plot(binarystack, col = colorRampPalette(c("white", "blue"))(256))
 ### Question 6
 
 
-##### You can visualize the uncertainty the classifications by summing the entire stack. The higher the count in each pixel, the more certain you can be about its flooded state. Meaning for a cell with a value of 6 every method identified the cell as flooded. While a cell with a value of 2, two of the methods identified the cell as flooded.
+#### You can visualize the uncertainty of the classifications in the data by summing the entire stack. The higher the count in each pixel, the more certain you can be about its flooded state. Meaning, for a cell with a value of 6, each of the six methods identified the cell as flooded. While, for a cell with a value of 2, two of the methods identified the cell as flooded.
 
 
 #### Calculate the total area of floods and visualize uncertainty in the classifications
