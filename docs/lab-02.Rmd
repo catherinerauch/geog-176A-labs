@@ -7,7 +7,7 @@ html_document:
     theme: spacelab
 ---
 ***
-##### *This report is current as of 8/30/2020*
+##### *This report was current as of 8/30/2020*
 
 ***
 

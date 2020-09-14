@@ -1,18 +1,52 @@
 ---
 title: "Geography 176A"
-author: "[Catherine Rauch](https://catherinerauch.github.io)"
+author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
 subtitle: 'Lab 05'
 output:
   html_document:
     theme: spacelab
 ---
+***
+
+## In this lab:
+
+```{r, echo=FALSE, out.width="40%",out.height="30%",fig.cap="  ",fig.align='left'}
+knitr::include_graphics(c("C:/Users/Catherine/Documents/github/geog-176A-labs/img/lab5plot.png"))
+```
+
+#### - create multiband raster data to detect and analyze a flood event
+
+#### - create flood images using mutliband Landsat Imagery, thresholding, and classification methods.
+
+#### - examine impacts on the town of Palo in Iowa 
 
 
 ***
 
 ### Libraries
 
-```{r setup, message=FALSE}
+
+##### Raster Data handling
+##### - library(raster) 
+
+
+##### Data Manipulation
+##### - library(tidyverse)
+
+
+##### keyless Landsat data (2013-2017)
+##### - library(getlandsat)
+
+
+##### Vector data processing
+##### - library(sf)
+
+
+##### Rapid Interactive visualization
+##### - library(mapview)
+
+***
+```{r setup, message=FALSE, include = FALSE}
 
 library(raster) # Raster Data handling
 library(tidyverse) # Data Manipulation
@@ -25,9 +59,12 @@ library(sp)
 ```
 
 *** 
+
+
+
 ### Question 1
 
-#### define and create AOI - Palo, Iowa
+#### Define and create AOI - Palo, Iowa
 
 ```{r Q1, message=FALSE, warning=FALSE}
 
@@ -64,7 +101,7 @@ filtered <- landstatdata %>%
 
 ### Question 2
 
-#### download/cache files and stack raster files
+#### Download/cache files and stack raster files
 
 ```{r q1 part 2, warning=FALSE, message=FALSE}
 
@@ -103,7 +140,7 @@ b <- stack(st) %>%
 ***
 
 
-#### crop raster stack to AOI
+#### Crop raster stack to AOI
 
 ```{r q2, warning=FALSE, message=FALSE}
 
@@ -117,23 +154,23 @@ cropped <- crop(b, AOIcrop)
 ```
 ***
 
-- What are the dimensions of your cropped image stack?
+> What are the dimensions of your cropped image stack?
 
-    340 rows with 346 columns and 6 layers for a total of 117,640 cells.
+##### 340 rows with 346 columns and 6 layers for a total of 117,640 cells.
 
-- What is the CRS?
+> What is the CRS?
 
-    WGS84
+##### WGS84
 
-- What is the cell resolution?
+> What is the cell resolution?
 
-    30m by 30m
+##### 30m by 30m
 
 ***
 
 ### Question 3
 
-#### rename raster stack to correspaoning band names and plot band combinations
+#### Rename raster stack to corresponding band names and plot band combinations
 
 ```{r q3, warning=FALSE, message=FALSE}
 
@@ -159,7 +196,6 @@ plotRGB(rasterstack, 1, 2, 6, stretch = 'lin')
 
 par(op)
 
-
 ```
 
 ***
@@ -171,7 +207,7 @@ par(op)
 
 ### Question 4
 
-#### create 5 new rasters using formulas for NDVI, NDWI, MNDWI, WRI and SWI
+#### Create 5 new rasters using formulas for NDVI, NDWI, MNDWI, WRI and SWI
 
 ```{r q4, warning=FALSE, message=FALSE}
 
@@ -200,7 +236,7 @@ plot(stackedraster, col = colorRampPalette(c("blue", "white", "red"))(256))
 
 ***
 
-#### create flooding thresholds for the rasters
+#### Create flooding thresholds for the rasters
 
 ```{r q4 part2, message=FALSE, warning=FALSE}
 
@@ -259,7 +295,7 @@ binary_swi[is.na(values(binary_swi))] <- 0
 ### Question 5
 
 
-#### extract values from 6-band raster stack  
+#### Extract values from 6-band raster stack  
 ```{r q5, message=FALSE, warning=FALSE}
 
 set.seed(20200907)
@@ -284,7 +320,7 @@ values <- na.omit(values)
 
 ***
 
-#### create new kmeans raster object
+#### Create new kmeans raster object
 
 ```{r q4 part 2, message=FALSE, warning=FALSE}
 
@@ -317,7 +353,11 @@ plot(binarystack, col = colorRampPalette(c("white", "blue"))(256))
 ### Question 6
 
 
-#### calculate the total area of floods and visualize uncertainty in the classifications
+##### You can visualize the uncertainty the classifications by summing the entire stack. The higher the count in each pixel, the more certain you can be about its flooded state. Meaning for a cell with a value of 6 every method identified the cell as flooded. While a cell with a value of 2, two of the methods identified the cell as flooded.
+
+
+#### Calculate the total area of floods and visualize uncertainty in the classifications
+
 ```{r q6, message=FALSE, warning=FALSE}
 
 area <- cellStats(binarystack, 'sum') * (30^2)
@@ -331,11 +371,13 @@ kable_styling(kable(data.frame(area), col.names = ('Area'),
 summedfloods <- calc(binarystack, fun = sum) 
 plot(summedfloods, col = blues9, title = "Flood Uncertanity")
 
+
+
 ```
 
 ***
 
-#### create interactive map
+#### Create interactive map
 
 ```{r q6 part2, message=FALSE, warning=FALSE}
 
@@ -344,6 +386,7 @@ summedfloods[summedfloods == 0] <- NA
 
 pal <- mapviewPalette("mapviewTopoColors")
 mapview(summedfloods, col = pal)
+
 
 ```
 

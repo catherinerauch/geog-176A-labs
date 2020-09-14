@@ -1,6 +1,6 @@
 ---
 title: "Geography 176A"
-author: "[Catherine Rauch](https://catherinerauch.github.io)"
+author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
 subtitle: 'Lab 04'
 output:
   html_document:
@@ -9,9 +9,61 @@ output:
 
 ***
 
+## In this lab:
+
+```{r, echo=FALSE, out.width="50%",out.height="40%",fig.cap="   ",fig.align='left'}
+knitr::include_graphics("C:/Users/Catherine/Documents/github/geog-176A-labs/img/lab4plot.png")
+```
+
+##### - visualizing distribution of dams and there purpose across the US
+
+##### - impacts of tessellated surfaces and the modifiable areal unit problem 
+
+##### - writing functions to preform repative tasks. 
+
+##### - consideration of feature aggregation/simplification, and spatial joins
+
+
+***
+### Data:
+
+##### - National Dams Inventory maintained by the United States Army Corps of Engineers
+
+***
+
 ### Libraries
 
-```{r setup, message=FALSE, warning=FALSE}
+
+##### data wrangling tools
+
+- library(tidyverse)
+- library(units) 
+- library(readxl)
+
+ 
+ 
+##### spatial objects
+
+- library(sf) 
+
+
+
+##### data used
+
+- library(USAboundaries)
+- library(USAboundariesData)
+- library(rnaturalearthdata)
+
+
+
+##### plots and tables
+
+- library(gghighlight)
+- library(ggrepel)
+- library(knitr)
+- library(leaflet)
+
+```{r setup,include=FALSE,message=FALSE, warning=FALSE}
 
 library(tidyverse)
 library(sf)
@@ -26,10 +78,11 @@ library(readxl)
 library(leaflet)
 ```
 
+
 *** 
 ### Question 1
 
-#### create county centroids
+#### Create county centroids
 ```{r q1 part 1, message=FALSE, warning=FALSE}
 
 conuscounties <- USAboundaries::us_counties(resolution = "low") %>%
@@ -44,7 +97,7 @@ counties_cent = st_centroid(conuscounties) %>%
 ```
 
 ***
-#### generate Tessellations/Coverages 
+#### Generate Tessellations/Coverages 
 
 ```{r q1 part 2, message=FALSE, warning=FALSE}
 
@@ -103,15 +156,15 @@ t_grid <- st_intersection(t_grid, simple_union_conus)
 ```
 ***
 
-##### How many points were you able to remove? What are the consequences of doing this computationally?
+> ##### How many points were you able to remove? What are the consequences of doing this computationally?
 
 
-The original data had 3,229 points while the simplified object only had 256. I was able to remove 2,973. By simplifying computationally you run the risk of oversimplifying certain areas. Because the computer is simplifying for you it may remove information you wanted to preserve.
+##### The original data had 3,229 points while the simplified object only had 256. I was able to remove 2,973. By simplifying computationally you run the risk of oversimplifying certain areas. Because the computer is simplifying for you it may remove information you wanted to preserve.
 
 
 ***
 
-#### define plot function and plot Tessellations/Coverages
+#### Define plot function and plot Tessellations/Coverages
 
 ```{r q1 part4, message=FALSE, warning=FALSE}
 
@@ -136,7 +189,7 @@ gridExtra::grid.arrange(plot_tessellations(v_grid, "Voronoi Coverage"),plot_tess
 
 ### Question 2
 
-#### summarize tessellated surfaces
+#### Summarize tessellated surfaces
 
 ```{r q2,message=FALSE, warning=FALSE}
 
@@ -177,20 +230,19 @@ kable_styling(kable(tess_summary, caption = "Summary of Tesselation Characterist
 ```
 ***
 
-##### Comment on the traits of each tessellation. Be specific about how these traits might impact the results of a point-in-polygon analysis in the contexts of the modifiable areal unit problem and with respect computational requirements.
+> ##### Comment on the traits of each tessellation. Be specific about how these traits might impact the results of a point-in-polygon analysis in the contexts of the modifiable areal unit problem and with respect computational requirements.
 
-The triangulation had the highest number of features at 6,195, while the original county data, grid coverage and Voroni tessellation all had a similar number (approx 3,108). The hexagonal coverage had the fewest features at 2,271. Similarly original county data, grid coverage and Voroni tessellation had mean areas that were close in number (2,522 2,728 2,519 respectively). While having the fewest features, Hexagonal had the highest mean at 3,763, while triangulation having the most features had the lowest mean at 1,251.
+##### The triangulation had the highest number of features at 6,195, while the original county data, grid coverage and Voroni tessellation all had a similar number (approx 3,108). The hexagonal coverage had the fewest features at 2,271. Similarly original county data, grid coverage and Voroni tessellation had mean areas that were close in number (2,522 2,728 2,519 respectively). While having the fewest features, Hexagonal had the highest mean at 3,763, while triangulation having the most features had the lowest mean at 1,251.
 
-Modifiable areal unit problem (MAUP) is present here, it can be seen that by aggregating the data into triangles it lowered the mean significantly from where it was with the original data set. On the flip side, hexagonal coverage significantly increased the mean. This bias could impact any tests conducted with the data or computations requiring the mean.
+##### Modifiable areal unit problem (MAUP) is present here, it can be seen that by aggregating the data into triangles it lowered the mean significantly from where it was with the original data set. On the flip side, hexagonal coverage significantly increased the mean. This bias could impact any tests conducted with the data or computations requiring the mean.
 
-It can also be seen that the Grid and Hexagonal Coverage increase the total area from roughly 7,837,583 to 8,479,014
-and	8,545,891 respectively.
+##### It can also be seen that the Grid and Hexagonal Coverage increase the total area from roughly 7,837,583 to 8,479,014 and	8,545,891 respectively.
 
 
 ***
 ### Question 3
 
-#### develop and apply point-in-polygon (pip) function
+#### Develop and apply point-in-polygon (pip) function
 
 ```{r q3 part1, message=FALSE, warning=FALSE}
 
@@ -231,7 +283,7 @@ t_pip <- point_in_polygon(NID2019, t_grid, "id")
 
 ***
 
-#### develop and apply pip plotting function
+#### Develop and apply pip plotting function
 
 ```{r 3, warning=FALSE, message=FALSE}
 #############################################################
@@ -258,17 +310,17 @@ gridExtra::grid.arrange(plot_pip(v_pip, "Voronoi Coverage"), plot_pip(t_pip, "Tr
 ***
 
 
-##### Comment on the influence of the tessellated surface in the visualization of point counts. How does this related to the MAUP problem. Moving forward you will only use one tessellation, which will you chose and why?
+> ##### Comment on the influence of the tessellated surface in the visualization of point counts. How does this related to the MAUP problem. Moving forward you will only use one tessellation, which will you chose and why?
 
-As each tessellation aggregates the data differently ie the shape and scale of the aggregation unit it creates bias. As can be seen in the Grid and Hexagonal coverages, where they appeared to increase the top level of point counts, meaning the high end of the gradient was 500-600 this caused the plot to lose some of the original definition in the west side of the country. While Voroni and triangulation appeared to decrease the top level of point counts it was a much smaller difference (original county data: 300 to voroni/triangulation: 200). This allowed these graphs to look similar to the original data although it was aggregated differently.
+##### As each tessellation aggregates the data differently ie the shape and scale of the aggregation unit it creates bias. As can be seen in the Grid and Hexagonal coverages, where they appeared to increase the top level of point counts, meaning the high end of the gradient was 500-600 this caused the plot to lose some of the original definition in the west side of the country. While Voroni and triangulation appeared to decrease the top level of point counts it was a much smaller difference (original county data: 300 to voroni/triangulation: 200). This allowed these graphs to look similar to the original data although it was aggregated differently.
 
-Moving forward I will be using the Voroni Tessellation because it had slightly fewer features but was able to protect the distribution of the original data not just in the graph but in regards to mean, total area and standard deviation compared to the other tessellations.
+##### Moving forward I will be using the Voroni Tessellation because it had slightly fewer features but was able to protect the distribution of the original data not just in the graph but in regards to mean, total area and standard deviation compared to the other tessellations.
 
 ***
 
 ### Question 4
 
-#### create point-in-polygon counts for 4 dam purposes and plot them
+#### Create point-in-polygon counts for 4 dam purposes and plot them
 
 ```{r q4, message=FALSE, warning=FALSE}
 
@@ -301,23 +353,26 @@ gridExtra::grid.arrange(plot_pip(rec_pip, 'Distribution of Recreation Dams') + g
                         plot_pip(he_pip, 'Distribution of Hydroelectric Dams') + gghighlight(n > (mean(n) + sd(n))),
                         nrow = 2)
 
+
+
 ```
 
-##### Comment of geographic distribution of dams you found. Does it make sense? How does the distribution of dams coincide with other geogaphic factors such as river systems, climate, etc?
+> ##### Comment of geographic distribution of dams you found. Does it make sense? How does the distribution of dams coincide with other geogaphic factors such as river systems, climate, etc?
 
-The water supply dams appear to be concentrated heavily in California and upper mid possibly Wyoming, Nebraska, South Dakota. There are a few scattered in Texas and the north east around Massachusetts, Connecticut and New York. 
-The large amount of water supply dams in California and even in Texas is likely because they are both drier states. Especially in California where droughts are common so access to a water supply dam would be relevant.
+##### The water supply dams appear to be concentrated heavily in California and upper mid possibly Wyoming, Nebraska, South Dakota. There are a few scattered in Texas and the north east around Massachusetts, Connecticut and New York. The large amount of water supply dams in California and even in Texas is likely because they are both drier states. Especially in California where droughts are common so access to a water supply dam would be relevant.
 
-The flood control dams appear to be clustered in around the center of the country in states like Nebraska, Kansas, Oklahoma, and Texas. There big cities are very close to large rivers Omaha/Kansas City and the Missouri river, Tulsa and he Arkansas river. All of which flow to the Mississippi river and are likely to flood.
+##### The flood control dams appear to be clustered in around the center of the country in states like Nebraska, Kansas, Oklahoma, and Texas. There big cities are very close to large rivers Omaha/Kansas City and the Missouri river, Tulsa and he Arkansas river. All of which flow to the Mississippi river and are likely to flood.
 
-Most Hydro electric dams appear to be in the very North East, Maine, Vermont, northern New York with some clustered around in the NorthWest (Washington, Oregon, California). The network in Washington State is likely due to its large inner water system including the Columbia and Snake rivers.
+##### Most Hydro electric dams appear to be in the very North East, Maine, Vermont, northern New York with some clustered around in the NorthWest (Washington, Oregon, California). The network in Washington State is likely due to its large inner water system including the Columbia and Snake rivers.
 
-While most Recreation Dams appear to be varied along the east coast with a large concentration in the Mississippi area likely close to the Mississippi river.
+##### While most Recreation Dams appear to be varied along the east coast with a large concentration in the Mississippi area likely close to the Mississippi river.
 
 
 ***
 
 #### Extra Credit
+
+##### Identify the largest, at risk, flood control dams in the country and map map the Mississippi River System.
 
 ```{r extra credit, message=FALSE, warning=FALSE}
 

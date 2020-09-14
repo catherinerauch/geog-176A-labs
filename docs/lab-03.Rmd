@@ -9,13 +9,13 @@ output:
 ***
 ## In this lab:
 
-- building sf objects from R packages and CSVs
+##### - building sf objects from R packages and CSVs
 
-- manipulating geometries and coordinate systems, calculating distances
+##### - manipulating geometries and coordinate systems, calculating distances
 
-- building maps using ggplot and accessory packages
+##### - building maps using ggplot and accessory packages
 
-- examination of a real world application
+##### - examination of a real world application
 
 ```{r, echo=FALSE, out.width="50%",out.height="40%",fig.cap="   ",fig.align='left'}
 knitr::include_graphics("C:/Users/Catherine/Documents/github/geog-176A-labs/docs/USthememap.jpg")
@@ -24,31 +24,31 @@ knitr::include_graphics("C:/Users/Catherine/Documents/github/geog-176A-labs/docs
 ***
 ## Data:
 
-- spatial boundaries of continental USA states
+##### - spatial boundaries of continental USA states
 
-- boundaries of Canada, Mexico and the United States 
+##### - boundaries of Canada, Mexico and the United States 
 
-- all USA city 
+##### - all USA city 
 
 ***
 
 ### Libraries
 
 ##### data wrangling tools
-- library(tidyverse)
-- library(units) 
+##### - library(tidyverse)
+##### - library(units) 
 
 ##### spatial objects
-- library(sf) 
+##### - library(sf) 
 
 ##### data used
-- library(USAboundaries)
-- library(rnaturalearthdata)
+##### - library(USAboundaries)
+##### - library(rnaturalearthdata)
 
 ##### plots and tables
-- library(gghighlight)
-- library(ggrepel)
-- library(knitr)
+##### - library(gghighlight)
+##### - library(ggrepel)
+##### - library(knitr)
 
 ```{r libraries, include=FALSE}
 
