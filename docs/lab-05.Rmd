@@ -1,7 +1,7 @@
 ---
 title: "Geography 176A"
 author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
-subtitle: 'Lab 05'
+subtitle: 'Lab 05: Rasters & Remote Sensing - Palo, Iowa'
 output:
   html_document:
     theme: spacelab

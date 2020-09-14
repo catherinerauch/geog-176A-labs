@@ -1,7 +1,7 @@
 ---
 title: "Geography 176A"
 author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
-subtitle: 'Lab 04'
+subtitle: 'Lab 04: Tesselations and Point-in-Polygon - National Dam Inventory'
 output:
   html_document:
     theme: spacelab
