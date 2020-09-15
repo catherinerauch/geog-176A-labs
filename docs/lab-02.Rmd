@@ -1,13 +1,13 @@
 ---
 title: "Geography 176A"
-subtitle: "Lab 02: COVID-19 Pandemic"
 author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
+subtitle: "Lab 02: COVID-19 Pandemic"
 output: html_document
 html_document:
     theme: spacelab
 ---
 ***
-##### *This report was current as of 8/30/2020*
+##### *This report was current as of 9/05/2020*
 
 ***
 
@@ -222,7 +222,7 @@ greaterthan100 <- CovidandPopulation %>%
 ```
 ***
 
-##### 3 counties have more than 100 cases per 100,000 residents in the past 14 days, that leaves **55** counties deemed as safe.
+##### 2 counties have more than 100 cases per 100,000 residents in the past 14 days, that leaves **55** counties deemed as safe.
 ***
 
 ```{r 4, echo=FALSE}

@@ -1,7 +1,7 @@
 ---
 title: "Geography 176A"
-subtitle: 'Lab 03: Distances, Projections and the Danger Zone'
 author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
+subtitle: 'Lab 03: Distances, Projections and the Danger Zone'
 output:
   html_document:
     theme: spacelab

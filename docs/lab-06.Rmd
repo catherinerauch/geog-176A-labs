@@ -1,7 +1,7 @@
 ---
 title: "Geography 176A"
-subtitle: "Lab 06: Flood Impact - Mission Creek"
 author: "[Catherine Rauch](https://catherinerauch.github.io/geog176A.html)"
+subtitle: "Lab 06: Flood Impact - Mission Creek"
 output: html_document
 html_document:
     theme: spacelab
@@ -12,7 +12,9 @@ knitr::opts_chunk$set(warning = F, message = F)
 ```
 
 ```{r bro, echo=FALSE, out.width="50%",out.height="40%",fig.cap="   ",fig.align='left'}
-knitr::include_graphics("img/lab06plot.png")
+
+knitr::include_graphics("C:/Users/Catherine/Documents/github/geog-176A-labs/img/CopyOflab06plot.png")
+
 ```
 
 
@@ -39,8 +41,8 @@ knitr::include_graphics("img/lab06plot.png")
 
 ##### raster tools
 
-library(raster) 
-library(fasterize)
+- library(raster) 
+- library(fasterize)
 
 
 ##### spatial and terrian tools
@@ -90,7 +92,7 @@ elevation <- get_elev_raster(basindata, z = 13) %>%
               convertmtoft()
 
 # write raster data folder as a tif file
-writeRaster(elevation, "data/elevation_basin.tif", overwrite = TRUE)
+writeRaster(elevation, "C:/Users/Catherine/Documents/github/geog-176A-labs/data/elevation_basin.tif", overwrite = TRUE)
 
 ```
 ***
@@ -99,7 +101,7 @@ writeRaster(elevation, "data/elevation_basin.tif", overwrite = TRUE)
 
 ```{r part2}
 
-elevationraster <- raster("data/elevation_basin.tif")
+elevationraster <- raster("C:/Users/Catherine/Documents/github/geog-176A-labs/data/elevation_basin.tif")
 
 basinbox <- st_bbox(elevationraster) %>% 
             st_as_sfc() %>% 
@@ -144,13 +146,13 @@ streams <- streams$osm_lines %>%
 ```{r part3}
 
 # a “Hillshade” raster for visualization
-wbt_hillshade("data/elevation_basin.tif", 'data/basin_hillshade.tif')
+wbt_hillshade("C:/Users/Catherine/Documents/github/geog-176A-labs/data/elevation_basin.tif", 'C:/Users/Catherine/Documents/github/geog-176A-labs/data/basin_hillshade.tif')
 
-basinhillshade <- raster('data/basin_hillshade.tif')
+basinhillshade <- raster('C:/Users/Catherine/Documents/github/geog-176A-labs/data/basin_hillshade.tif')
 
 plot(basinhillshade, col = gray.colors(256, alpha = .5), box = F, main = '', legend = F) 
-plot(streams, add = T , col = 'blue')
 plot(basindata, add = T)
+plot(streams, add = T , col = 'blue')
 
 ```
 ***
@@ -170,9 +172,9 @@ buffer_streamlines <- streams %>%
 rasterrivers <- fasterize::fasterize(buffer_streamlines,  elevationraster)
 
 # write river raster to  data folder
-writeRaster(rasterrivers, "data/riverraster.tif", overwrite = T)
+writeRaster(rasterrivers, "C:/Users/Catherine/Documents/github/geog-176A-labs/data/riverraster.tif", overwrite = T)
 
-riverraster <- raster('data/riverraster.tif')
+riverraster <- raster('C:/Users/Catherine/Documents/github/geog-176A-labs/data/riverraster.tif')
 
 ```
 
@@ -183,22 +185,22 @@ riverraster <- raster('data/riverraster.tif')
 ```{r part5}
 
 # use the whitebox tool wbt_breach_depressions to correct errors in our DEM/elevation grid. 
-wbt_breach_depressions("data/elevation_basin.tif", 'data/breachelevationraster.tif')
+wbt_breach_depressions("C:/Users/Catherine/Documents/github/geog-176A-labs/data/elevation_basin.tif", 'C:/Users/Catherine/Documents/github/geog-176A-labs/data/breachelevationraster.tif')
 
 ```
 ```{r part6}
 
 #
-wbt_elevation_above_stream('data/breachelevationraster.tif', "data/riverraster.tif", "data/HANDelevationraster.tif" )
+wbt_elevation_above_stream('C:/Users/Catherine/Documents/github/geog-176A-labs/data/breachelevationraster.tif', "data/riverraster.tif", "C:/Users/Catherine/Documents/github/geog-176A-labs/data/HANDelevationraster.tif" )
 
 # a “Height Above Nearest Drainage” (HAND) raster for rapid flood assessment
-HANDraster <- raster('data/HANDelevationraster.tif')
+HANDraster <- raster('C:/Users/Catherine/Documents/github/geog-176A-labs/data/HANDelevationraster.tif')
 
 
 
 ```
 
-#### Add 3.69 foot offset to current HAND raster and then ensure river network still has a HAND value of 0. 
+#### Add 3.69 foot offset to current HAND raster and then ensure river network still has a HAND value of 0
 
 ```{r part 7}
 
@@ -211,32 +213,34 @@ index <- which(values(riverraster) == 1)
 values(offsetHANDraster)[index] <- 0 
 
 # save the new, offset raster to your data folder
-writeRaster(offsetHANDraster, 'data/offsetHANDraster.tif', overwrite = T)
+writeRaster(offsetHANDraster, 'C:/Users/Catherine/Documents/github/geog-176A-labs/data/offsetHANDraster.tif', overwrite = T)
 ```
 
 ***
+
 ### 2017 Impact Assessment
 
 #### Map the flood
 ```{r part 8}
 
 # Read in the corrected HAND raster
-offsetHANDraster <- raster('data/offsetHANDraster.tif')
+offsetHANDraster <- raster('C:/Users/Catherine/Documents/github/geog-176A-labs/data/offsetHANDraster.tif')
 
 
 # Create a flood map where any cell with a HAND value greater then 10.02 is set to NA.
 values(offsetHANDraster)[which(values(offsetHANDraster) > 10.02)] <- NA
 
-plot(basinhillshade, col = gray.colors(256, alpha = .5), box = F,
-     main = '', legend = F)
+plot(basinhillshade,  box = F, main = '', legend = F, col = gray.colors(256, alpha = .5))
 # Overlay the flood map using the rev(blues9) color palette and add = TRUE
-plot(riverraster,  add = T, col = rev(blues9), box = F, legend = F)
+plot(riverraster,  add = T, box = F, legend = F, col = rev(blues9))
 # Plot the railway station as a point of reference colored in green, with cex = 1, and pch = 16
-plot(railwaypoints, add = T, col = 'green', box = F, cex = 1, pch = 16)
+plot(railwaypoints, add = T, box = F, cex = 1, pch = 16, col = 'green')
 
 
 ```
+
 ***
+
 #### Estimate and visualize the impacts
 
 ```{r part 9}
@@ -245,15 +249,14 @@ flooddepth <- raster::extract(offsetHANDraster, pointbuildings)
 # count the number not equal to NA in order to determine the number of impacted structures.
 pointbuildings$flooded <- as.factor(ifelse(!is.na(flooddepth), 1, 0))
 
-plot(basinhillshade, col = gray.colors(256, alpha = .5), box = F, main = paste(sum(pointbuildings$flooded==1),
-                                                      'Buildings Impacted - 2017 Santa Barbara Basin Flood'),
-                                                      legend = F)
+plot(basinhillshade, col = gray.colors(256, alpha = .5), box = F, legend = F, 
+     main = paste(sum(pointbuildings$flooded==1),'Buildings Impacted - 2017 Santa Barbara Basin Flood'))
 # add flood map
-plot(offsetHANDraster,add = T,  col = rev(blues9), box = F,  legend = F)
+plot(offsetHANDraster,add = T,  box = F,  legend = F, col = rev(blues9))
 # add the buildings centroids to the map:
-plot(pointbuildings, add = T, col = c('black','red')[pointbuildings$flooded], box = F, cex = .08, pch = 16)
+plot(pointbuildings, add = T, box = F, cex = .08, pch = 16, col = c('black','red')[pointbuildings$flooded])
 # Add the railroad as a reference point
-plot(railwaypoints, add = T, col = 'green', box = F, cex = 1, pch = 16)
+plot(railwaypoints, add = T, box = F, cex = 1, pch = 16, col = 'green')
 legend(x = 'topright', legend = c('Flooded', 'Not Flooded'), 
        col = c('red', 'black'), cex = 1, pch = 16)
 
